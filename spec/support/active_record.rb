@@ -3,11 +3,12 @@ require 'active_record'
 RSpec.configure do |config|
   config.before(:suite) do
     ActiveRecord::Base.establish_connection(
-      :adapter  => 'postgresql',
-      :database => 'carrierwave_test',
-      :username => 'postgres',
-      :password => 'password',
-      :host     => 'localhost')
+      adapter: 'postgresql',
+      database: 'carrierwave_test',
+      username: 'postgres',
+      password: 'password',
+      host: 'localhost'
+    )
     ActiveRecord::Base.connection.create_table :tests, force: true do |t|
       t.column :file, :oid
     end

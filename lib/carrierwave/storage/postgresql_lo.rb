@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 module CarrierWave
   module Storage
     class PostgresqlLo < Abstract
@@ -14,13 +15,12 @@ module CarrierWave
         end
 
         def url
-          "/#{@uploader.model.class.name.underscore.gsub('/', '_')}_#{@uploader.mounted_as.to_s.underscore}/#{identifier}"
+          "/#{@uploader.model.class.name.underscore.tr('/', '_')}_#{@uploader.mounted_as.to_s.underscore}/#{identifier}"
         end
 
-        def content_type
-        end
+        def content_type; end
 
-        alias :size :file_length
+        alias size file_length
 
         def connection
           @connection ||= @uploader.model.class.connection.raw_connection
@@ -33,23 +33,23 @@ module CarrierWave
         def original_filename
           identifier.to_s
         end
-
       end
 
       def store!(file)
-        raise "This uploader must be mounted in an ActiveRecord model to work" unless uploader.model
+        raise 'This uploader must be mounted in an ActiveRecord model to work' unless uploader.model
         stored = CarrierWave::Storage::PostgresqlLo::File.new(uploader)
         stored.write(file)
         stored
       end
 
       def retrieve!(identifier)
-        raise "This uploader must be mounted in an ActiveRecord model to work" unless uploader.model
+        raise 'This uploader must be mounted in an ActiveRecord model to work' unless uploader.model
         @oid = identifier
         CarrierWave::Storage::PostgresqlLo::File.new(uploader)
       end
 
       def identifier
+        return nil unless uploader.file
         @oid ||= create_large_object
       end
 
@@ -58,6 +58,7 @@ module CarrierWave
       end
 
       private
+
       def create_large_object
         if defined?(JRUBY_VERSION)
           connection.connection.getLargeObjectAPI.createLO
